@@ -941,7 +941,9 @@ public class ECKey implements EncryptableItem, Serializable {
         final byte[] privKeyBytes = getPrivKeyBytes();
         checkState(privKeyBytes != null, "Private key is not available");
         EncryptedData encryptedPrivateKey = keyCrypter.encrypt(privKeyBytes, aesKey);
-        return ECKey.fromEncrypted(encryptedPrivateKey, keyCrypter, getPubKey());
+        ECKey result = ECKey.fromEncrypted(encryptedPrivateKey, keyCrypter, getPubKey());
+        result.setCreationTimeSeconds(creationTimeSeconds);
+        return result;
     }
 
     /**
@@ -965,6 +967,7 @@ public class ECKey implements EncryptableItem, Serializable {
             key = key.decompress();
         if (!Arrays.equals(key.getPubKey(), getPubKey()))
             throw new KeyCrypterException("Provided AES key is wrong");
+        key.setCreationTimeSeconds(creationTimeSeconds);
         return key;
     }
 
